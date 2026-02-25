@@ -1,0 +1,2384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commercial Space Calculator</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    
+    // Icon Components
+    const Building2 = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    );
+
+    const Users = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    );
+
+    const DoorOpen = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+      </svg>
+    );
+
+    const Coffee = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11a3 3 0 003 3h2a3 3 0 003-3m-3-3V6m0 0V3m0 3h3m-3 0H7m5 11v3m0-3H9m3 0h3" />
+      </svg>
+    );
+
+    const Server = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+      </svg>
+    );
+
+    const Package = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+      </svg>
+    );
+
+    const Plus = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+      </svg>
+    );
+
+    const X = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    );
+
+    const Download = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      </svg>
+    );
+
+    const Mail = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    );
+
+    const TrendingUp = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+      </svg>
+    );
+
+    const ChevronDown = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    );
+
+    const ChevronUp = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+      </svg>
+    );
+
+    // Product Type Selector Component
+    const ProductSelector = ({ selectedType, onSelect }) => {
+      return (
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">Select Your Space Type</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+            <button
+              onClick={() => onSelect('office')}
+              className={`p-6 rounded-lg border-2 transition-all ${
+                selectedType === 'office' 
+                  ? 'border-blue-600 bg-blue-50' 
+                  : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+              }`}
+            >
+              <div className="flex flex-col items-center text-center">
+                <Building2 className={`w-12 h-12 mb-3 ${selectedType === 'office' ? 'text-blue-600' : 'text-gray-400'}`} />
+                <h3 className="text-lg font-semibold mb-2">Traditional Office</h3>
+                <p className="text-sm text-gray-600">Conference rooms, offices, workstations, huddle rooms</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => onSelect('flex')}
+              className={`p-6 rounded-lg border-2 transition-all ${
+                selectedType === 'flex' 
+                  ? 'border-orange-600 bg-orange-50' 
+                  : 'border-gray-200 hover:border-orange-300 hover:bg-gray-50'
+              }`}
+            >
+              <div className="flex flex-col items-center text-center">
+                <Package className={`w-12 h-12 mb-3 ${selectedType === 'flex' ? 'text-orange-600' : 'text-gray-400'}`} />
+                <h3 className="text-lg font-semibold mb-2">Flex Space</h3>
+                <p className="text-sm text-gray-600">Office + warehouse combination space</p>
+              </div>
+            </button>
+
+          </div>
+        </div>
+      );
+    };
+
+    // ====================
+    // OFFICE CALCULATOR
+    // ====================
+    const OfficeSpaceCalculator = () => {
+  // Active scenario state
+  const [activeScenario, setActiveScenario] = useState('current');
+  const [futureModified, setFutureModified] = useState(false);
+
+  // Initialize state for both scenarios
+  const initialState = {
+    reception: {
+      hasEmployee: true,
+      waitingCapacity: 0
+    },
+    huddleRooms: [],
+    conferenceRooms: [],
+    privateOffices: [],
+    workstations: {
+      count: 0,
+      width: 5,
+      length: 6
+    },
+    breakRoom: {
+      enabled: false,
+      size: 'medium',
+      customWidth: 10,
+      customLength: 20
+    },
+    itCloset: {
+      enabled: false,
+      width: 8,
+      length: 12
+    },
+    storage: {
+      enabled: false,
+      width: 6,
+      length: 10
+    },
+    specialtyRooms: []
+  };
+
+  const [currentNeeds, setCurrentNeeds] = useState(initialState);
+  const [futureNeeds, setFutureNeeds] = useState(initialState);
+
+  // Collapsed sections state
+  const [collapsed, setCollapsed] = useState({
+    reception: false,
+    huddle: false,
+    conference: false,
+    offices: false,
+    workstations: false,
+    breakRoom: false,
+    support: false,
+    specialty: false
+  });
+
+  // Sync current to future until future is modified
+  useEffect(() => {
+    if (!futureModified) {
+      setFutureNeeds(currentNeeds);
+    }
+  }, [currentNeeds, futureModified]);
+
+  const getActiveData = () => activeScenario === 'current' ? currentNeeds : futureNeeds;
+  const setActiveData = (data) => {
+    if (activeScenario === 'current') {
+      setCurrentNeeds(data);
+    } else {
+      setFutureModified(true);
+      setFutureNeeds(data);
+    }
+  };
+
+  // Calculation functions
+  const calculateReceptionSF = (reception) => {
+    if (reception.waitingCapacity >= 10) return 400;
+    return reception.hasEmployee ? 400 : 300;
+  };
+
+  const calculateWorkstationsSF = (workstations) => {
+    const sfPerStation = workstations.width * workstations.length;
+    return workstations.count * sfPerStation * 2; // Double for circulation
+  };
+
+  const calculateBreakRoomSF = (breakRoom) => {
+    if (!breakRoom.enabled) return 0;
+    return breakRoom.customWidth * breakRoom.customLength;
+  };
+
+  const calculateTotalSF = (data) => {
+    let netSF = 0;
+
+    // Reception
+    netSF += calculateReceptionSF(data.reception);
+
+    // Huddle rooms
+    data.huddleRooms.forEach(room => {
+      netSF += room.width * room.length;
+    });
+
+    // Conference rooms
+    data.conferenceRooms.forEach(room => {
+      netSF += room.width * room.length;
+    });
+
+    // Private offices
+    data.privateOffices.forEach(office => {
+      netSF += office.width * office.length;
+    });
+
+    // Workstations (already doubled)
+    netSF += calculateWorkstationsSF(data.workstations);
+
+    // Break room
+    netSF += calculateBreakRoomSF(data.breakRoom);
+
+    // IT Closet
+    if (data.itCloset.enabled) {
+      netSF += data.itCloset.width * data.itCloset.length;
+    }
+
+    // Storage
+    if (data.storage.enabled) {
+      netSF += data.storage.width * data.storage.length;
+    }
+
+    // Specialty rooms
+    data.specialtyRooms.forEach(room => {
+      netSF += room.width * room.length;
+    });
+
+    const usableSF = Math.round(netSF * 1.35);
+    const rentableSF = Math.round(usableSF * 1.175);
+
+    return { netSF: Math.round(netSF), usableSF, rentableSF };
+  };
+
+  const toggleCollapsed = (section) => {
+    setCollapsed(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  // Room presets
+  const huddlePresets = [
+    { name: '4 Person', width: 10, length: 10, capacity: 4 },
+    { name: '6 Person', width: 10, length: 15, capacity: 6 },
+    { name: '8 Person', width: 12, length: 18, capacity: 8 }
+  ];
+
+  const conferencePresets = [
+    { name: 'Small (6 person)', width: 12, length: 15, capacity: 6 },
+    { name: 'Medium (8 person)', width: 12, length: 20, capacity: 8 },
+    { name: 'Large (12+ person)', width: 15, length: 25, capacity: 12 }
+  ];
+
+  const officePresets = [
+    { name: 'Small (Junior/Shared)', width: 8, length: 10 },
+    { name: 'Medium (Standard)', width: 10, length: 15 },
+    { name: 'Large (Executive)', width: 12, length: 18 }
+  ];
+
+  const breakRoomPresets = {
+    small: { width: 10, length: 12 },
+    medium: { width: 10, length: 20 },
+    large: { width: 20, length: 20 }
+  };
+
+  // Add room handlers
+  const addHuddleRoom = (preset) => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      huddleRooms: [...data.huddleRooms, { ...preset, id: Date.now() }]
+    });
+  };
+
+  const addConferenceRoom = (preset) => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      conferenceRooms: [...data.conferenceRooms, { ...preset, id: Date.now() }]
+    });
+  };
+
+  const addPrivateOffice = (preset) => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      privateOffices: [...data.privateOffices, { ...preset, id: Date.now() }]
+    });
+  };
+
+  const addSpecialtyRoom = () => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      specialtyRooms: [...data.specialtyRooms, { id: Date.now(), name: 'Custom Room', width: 10, length: 10 }]
+    });
+  };
+
+  // Delete handlers
+  const deleteRoom = (type, id) => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      [type]: data[type].filter(room => room.id !== id)
+    });
+  };
+
+  // Update handlers
+  const updateRoom = (type, id, field, value) => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      [type]: data[type].map(room => 
+        room.id === id ? { ...room, [field]: parseFloat(value) || 0 } : room
+      )
+    });
+  };
+
+  const updateSpecialtyRoom = (id, field, value) => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      specialtyRooms: data.specialtyRooms.map(room => 
+        room.id === id ? { ...room, [field]: value } : room
+      )
+    });
+  };
+
+  // Download report
+  const downloadReport = () => {
+    const currentTotals = calculateTotalSF(currentNeeds);
+    const futureTotals = calculateTotalSF(futureNeeds);
+    const difference = futureTotals.rentableSF - currentTotals.rentableSF;
+    const percentIncrease = ((difference / currentTotals.rentableSF) * 100).toFixed(1);
+
+    let report = '='.repeat(60) + '\n';
+    report += 'OFFICE SPACE REQUIREMENTS REPORT\n';
+    report += '='.repeat(60) + '\n\n';
+
+    // Current Needs
+    report += 'CURRENT NEEDS\n';
+    report += '-'.repeat(60) + '\n';
+    report += `Reception: ${calculateReceptionSF(currentNeeds.reception)} SF\n`;
+    
+    if (currentNeeds.huddleRooms.length > 0) {
+      report += `\nHuddle Rooms:\n`;
+      currentNeeds.huddleRooms.forEach((room, i) => {
+        report += `  ${room.name}: ${room.width}' x ${room.length}' = ${room.width * room.length} SF\n`;
+      });
+    }
+
+    if (currentNeeds.conferenceRooms.length > 0) {
+      report += `\nConference Rooms:\n`;
+      currentNeeds.conferenceRooms.forEach((room, i) => {
+        report += `  ${room.name}: ${room.width}' x ${room.length}' = ${room.width * room.length} SF\n`;
+      });
+    }
+
+    if (currentNeeds.privateOffices.length > 0) {
+      report += `\nPrivate Offices:\n`;
+      currentNeeds.privateOffices.forEach((office, i) => {
+        report += `  ${office.name}: ${office.width}' x ${office.length}' = ${office.width * office.length} SF\n`;
+      });
+    }
+
+    if (currentNeeds.workstations.count > 0) {
+      const sfPerStation = currentNeeds.workstations.width * currentNeeds.workstations.length;
+      report += `\nOpen Workstations:\n`;
+      report += `  ${currentNeeds.workstations.count} stations x ${sfPerStation} SF x 2 (circulation) = ${calculateWorkstationsSF(currentNeeds.workstations)} SF\n`;
+    }
+
+    if (currentNeeds.breakRoom.enabled) {
+      report += `\nBreak Room: ${calculateBreakRoomSF(currentNeeds.breakRoom)} SF\n`;
+    }
+
+    if (currentNeeds.itCloset.enabled) {
+      report += `IT Closet: ${currentNeeds.itCloset.width * currentNeeds.itCloset.length} SF\n`;
+    }
+
+    if (currentNeeds.storage.enabled) {
+      report += `Storage: ${currentNeeds.storage.width * currentNeeds.storage.length} SF\n`;
+    }
+
+    if (currentNeeds.specialtyRooms.length > 0) {
+      report += `\nSpecialty Rooms:\n`;
+      currentNeeds.specialtyRooms.forEach(room => {
+        report += `  ${room.name}: ${room.width}' x ${room.length}' = ${room.width * room.length} SF\n`;
+      });
+    }
+
+    report += `\nCurrent Totals:\n`;
+    report += `  Net Programmed SF: ${currentTotals.netSF}\n`;
+    report += `  Usable SF (+ 35% circulation): ${currentTotals.usableSF}\n`;
+    report += `  Rentable SF (+ 17.5% load factor): ${currentTotals.rentableSF}\n\n`;
+
+    // Future Needs
+    report += '\n' + '='.repeat(60) + '\n';
+    report += 'FUTURE NEEDS\n';
+    report += '-'.repeat(60) + '\n';
+    report += `Reception: ${calculateReceptionSF(futureNeeds.reception)} SF\n`;
+    
+    if (futureNeeds.huddleRooms.length > 0) {
+      report += `\nHuddle Rooms:\n`;
+      futureNeeds.huddleRooms.forEach((room, i) => {
+        report += `  ${room.name}: ${room.width}' x ${room.length}' = ${room.width * room.length} SF\n`;
+      });
+    }
+
+    if (futureNeeds.conferenceRooms.length > 0) {
+      report += `\nConference Rooms:\n`;
+      futureNeeds.conferenceRooms.forEach((room, i) => {
+        report += `  ${room.name}: ${room.width}' x ${room.length}' = ${room.width * room.length} SF\n`;
+      });
+    }
+
+    if (futureNeeds.privateOffices.length > 0) {
+      report += `\nPrivate Offices:\n`;
+      futureNeeds.privateOffices.forEach((office, i) => {
+        report += `  ${office.name}: ${office.width}' x ${office.length}' = ${office.width * office.length} SF\n`;
+      });
+    }
+
+    if (futureNeeds.workstations.count > 0) {
+      const sfPerStation = futureNeeds.workstations.width * futureNeeds.workstations.length;
+      report += `\nOpen Workstations:\n`;
+      report += `  ${futureNeeds.workstations.count} stations x ${sfPerStation} SF x 2 (circulation) = ${calculateWorkstationsSF(futureNeeds.workstations)} SF\n`;
+    }
+
+    if (futureNeeds.breakRoom.enabled) {
+      report += `\nBreak Room: ${calculateBreakRoomSF(futureNeeds.breakRoom)} SF\n`;
+    }
+
+    if (futureNeeds.itCloset.enabled) {
+      report += `IT Closet: ${futureNeeds.itCloset.width * futureNeeds.itCloset.length} SF\n`;
+    }
+
+    if (futureNeeds.storage.enabled) {
+      report += `Storage: ${futureNeeds.storage.width * futureNeeds.storage.length} SF\n`;
+    }
+
+    if (futureNeeds.specialtyRooms.length > 0) {
+      report += `\nSpecialty Rooms:\n`;
+      futureNeeds.specialtyRooms.forEach(room => {
+        report += `  ${room.name}: ${room.width}' x ${room.length}' = ${room.width * room.length} SF\n`;
+      });
+    }
+
+    report += `\nFuture Totals:\n`;
+    report += `  Net Programmed SF: ${futureTotals.netSF}\n`;
+    report += `  Usable SF (+ 35% circulation): ${futureTotals.usableSF}\n`;
+    report += `  Rentable SF (+ 17.5% load factor): ${futureTotals.rentableSF}\n\n`;
+
+    // Comparison
+    report += '\n' + '='.repeat(60) + '\n';
+    report += 'COMPARISON\n';
+    report += '-'.repeat(60) + '\n';
+    report += `Current Rentable SF: ${currentTotals.rentableSF}\n`;
+    report += `Future Rentable SF: ${futureTotals.rentableSF}\n`;
+    report += `Difference: ${difference > 0 ? '+' : ''}${difference} SF (${percentIncrease}%)\n`;
+
+    const subject = encodeURIComponent('Office Space Requirements Report');
+    const body = encodeURIComponent(report);
+    window.location.href = `mailto:mparisi@industry-rep.com?subject=${subject}&body=${body}`;
+  };
+
+  const data = getActiveData();
+  const currentTotals = calculateTotalSF(currentNeeds);
+  const futureTotals = calculateTotalSF(futureNeeds);
+  const activeTotals = activeScenario === 'current' ? currentTotals : futureTotals;
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Office Space Calculator</h1>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Scenario Selector */}
+            <div className="bg-white rounded-lg shadow-md p-4">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setActiveScenario('current')}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
+                    activeScenario === 'current'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Building2 className="inline-block w-5 h-5 mr-2" />
+                  Current Needs
+                </button>
+                <button
+                  onClick={() => setActiveScenario('future')}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
+                    activeScenario === 'future'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <TrendingUp className="inline-block w-5 h-5 mr-2" />
+                  Future Needs
+                </button>
+              </div>
+            </div>
+
+            {/* Reception */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('reception')}
+              >
+                <div className="flex items-center">
+                  <Building2 className="w-5 h-5 mr-2 text-blue-600" />
+                  <h2 className="text-xl font-semibold">Reception Area</h2>
+                </div>
+                {collapsed.reception ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.reception && (
+                <div className="p-4 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Reception Employee
+                    </label>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setActiveData({ ...data, reception: { ...data.reception, hasEmployee: true } })}
+                        className={`px-4 py-2 rounded ${
+                          data.reception.hasEmployee ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        Yes
+                      </button>
+                      <button
+                        onClick={() => setActiveData({ ...data, reception: { ...data.reception, hasEmployee: false } })}
+                        className={`px-4 py-2 rounded ${
+                          !data.reception.hasEmployee ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        No
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Waiting Capacity
+                    </label>
+                    <div className="flex items-center justify-center gap-4 bg-gray-50 p-4 rounded-lg">
+                      <button
+                        onClick={() => setActiveData({ ...data, reception: { ...data.reception, waitingCapacity: Math.max(0, data.reception.waitingCapacity - 1) } })}
+                        className="w-12 h-12 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-bold text-2xl flex items-center justify-center"
+                      >
+                        −
+                      </button>
+                      <div className="text-center">
+                        <div className="text-5xl font-bold text-blue-600">
+                          {data.reception.waitingCapacity}
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">people</div>
+                      </div>
+                      <button
+                        onClick={() => setActiveData({ ...data, reception: { ...data.reception, waitingCapacity: data.reception.waitingCapacity + 1 } })}
+                        className="w-12 h-12 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 font-bold text-2xl flex items-center justify-center"
+                      >
+                        +
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2 text-center">
+                      10+ capacity = 400 SF (20' × 20')
+                    </p>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
+                    <p className="font-medium">Total: {calculateReceptionSF(data.reception)} SF</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Conference Rooms */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('conference')}
+              >
+                <div className="flex items-center">
+                  <DoorOpen className="w-5 h-5 mr-2 text-blue-600" />
+                  <h2 className="text-xl font-semibold">
+                    Conference Rooms
+                    {data.conferenceRooms.length > 0 && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        ({data.conferenceRooms.length})
+                      </span>
+                    )}
+                  </h2>
+                </div>
+                {collapsed.conference ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.conference && (
+                <div className="p-4 space-y-4">
+                  <div className="flex gap-2 flex-wrap">
+                    {conferencePresets.map((preset, i) => (
+                      <button
+                        key={i}
+                        onClick={() => addConferenceRoom(preset)}
+                        className="px-4 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                      >
+                        <Plus className="inline-block w-4 h-4 mr-1" />
+                        {preset.name}
+                      </button>
+                    ))}
+                  </div>
+                  {data.conferenceRooms.map((room) => (
+                    <div key={room.id} className="border border-gray-200 rounded p-3 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">{room.name}</span>
+                        <button
+                          onClick={() => deleteRoom('conferenceRooms', room.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Width (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={room.width}
+                            onChange={(e) => updateRoom('conferenceRooms', room.id, 'width', e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Length (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={room.length}
+                            onChange={(e) => updateRoom('conferenceRooms', room.id, 'length', e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">SF</label>
+                          <div className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm">
+                            {Math.round(room.width * room.length)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Private Offices */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('offices')}
+              >
+                <div className="flex items-center">
+                  <Building2 className="w-5 h-5 mr-2 text-gray-600" />
+                  <h2 className="text-xl font-semibold">
+                    Private Offices
+                    {data.privateOffices.length > 0 && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        ({data.privateOffices.length})
+                      </span>
+                    )}
+                  </h2>
+                </div>
+                {collapsed.offices ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.offices && (
+                <div className="p-4 space-y-4">
+                  <div className="flex gap-2 flex-wrap">
+                    {officePresets.map((preset, i) => (
+                      <button
+                        key={i}
+                        onClick={() => addPrivateOffice(preset)}
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                      >
+                        <Plus className="inline-block w-4 h-4 mr-1" />
+                        {preset.name}
+                      </button>
+                    ))}
+                  </div>
+                  {data.privateOffices.map((office) => (
+                    <div key={office.id} className="border border-gray-200 rounded p-3 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">{office.name}</span>
+                        <button
+                          onClick={() => deleteRoom('privateOffices', office.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Width (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={office.width}
+                            onChange={(e) => updateRoom('privateOffices', office.id, 'width', e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Length (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={office.length}
+                            onChange={(e) => updateRoom('privateOffices', office.id, 'length', e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">SF</label>
+                          <div className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm">
+                            {Math.round(office.width * office.length)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Open Workstations */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('workstations')}
+              >
+                <div className="flex items-center">
+                  <Users className="w-5 h-5 mr-2 text-blue-600" />
+                  <h2 className="text-xl font-semibold">Open Workstations</h2>
+                </div>
+                {collapsed.workstations ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.workstations && (
+                <div className="p-4 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Number of Workstations
+                    </label>
+                    <div className="flex items-center justify-center gap-4 bg-gray-50 p-4 rounded-lg">
+                      <button
+                        onClick={() => setActiveData({ ...data, workstations: { ...data.workstations, count: Math.max(0, data.workstations.count - 1) } })}
+                        className="w-12 h-12 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-bold text-2xl flex items-center justify-center"
+                      >
+                        −
+                      </button>
+                      <div className="text-center">
+                        <div className="text-5xl font-bold text-blue-600">
+                          {data.workstations.count}
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">workstations</div>
+                      </div>
+                      <button
+                        onClick={() => setActiveData({ ...data, workstations: { ...data.workstations, count: data.workstations.count + 1 } })}
+                        className="w-12 h-12 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 font-bold text-2xl flex items-center justify-center"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Desk Dimensions
+                    </label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">
+                          Width (ft)
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={data.workstations.width}
+                          onChange={(e) => setActiveData({ ...data, workstations: { ...data.workstations, width: parseFloat(e.target.value) || 0 } })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">
+                          Length (ft)
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={data.workstations.length}
+                          onChange={(e) => setActiveData({ ...data, workstations: { ...data.workstations, length: parseFloat(e.target.value) || 0 } })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-blue-50 p-3 rounded">
+                    <p className="text-sm text-gray-700">
+                      SF per station: {Math.round(data.workstations.width * data.workstations.length)} SF
+                    </p>
+                    <p className="text-sm text-gray-700 mt-1">
+                      Total includes 2x multiplier for circulation
+                    </p>
+                    <p className="font-medium mt-2">
+                      Total: {calculateWorkstationsSF(data.workstations)} SF
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Huddle Rooms */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('huddle')}
+              >
+                <div className="flex items-center">
+                  <Users className="w-5 h-5 mr-2 text-purple-600" />
+                  <h2 className="text-xl font-semibold">
+                    Huddle Rooms
+                    {data.huddleRooms.length > 0 && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        ({data.huddleRooms.length})
+                      </span>
+                    )}
+                  </h2>
+                </div>
+                {collapsed.huddle ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.huddle && (
+                <div className="p-4 space-y-4">
+                  <div className="flex gap-2 flex-wrap">
+                    {huddlePresets.map((preset, i) => (
+                      <button
+                        key={i}
+                        onClick={() => addHuddleRoom(preset)}
+                        className="px-4 py-2 bg-purple-100 text-purple-700 rounded hover:bg-purple-200"
+                      >
+                        <Plus className="inline-block w-4 h-4 mr-1" />
+                        {preset.name}
+                      </button>
+                    ))}
+                  </div>
+                  {data.huddleRooms.map((room) => (
+                    <div key={room.id} className="border border-gray-200 rounded p-3 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">{room.name}</span>
+                        <button
+                          onClick={() => deleteRoom('huddleRooms', room.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Width (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={room.width}
+                            onChange={(e) => updateRoom('huddleRooms', room.id, 'width', e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Length (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={room.length}
+                            onChange={(e) => updateRoom('huddleRooms', room.id, 'length', e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">SF</label>
+                          <div className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm">
+                            {Math.round(room.width * room.length)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Break Room */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('breakRoom')}
+              >
+                <div className="flex items-center">
+                  <Coffee className="w-5 h-5 mr-2 text-amber-600" />
+                  <h2 className="text-xl font-semibold">Break Room</h2>
+                </div>
+                {collapsed.breakRoom ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.breakRoom && (
+                <div className="p-4 space-y-4">
+                  <div>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={data.breakRoom.enabled}
+                        onChange={(e) => setActiveData({ ...data, breakRoom: { ...data.breakRoom, enabled: e.target.checked } })}
+                        className="mr-2"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Include Break Room</span>
+                    </label>
+                  </div>
+                  {data.breakRoom.enabled && (
+                    <>
+                      <div className="flex gap-2">
+                        {['small', 'medium', 'large'].map((size) => (
+                          <button
+                            key={size}
+                            onClick={() => {
+                              const preset = breakRoomPresets[size];
+                              setActiveData({
+                                ...data,
+                                breakRoom: {
+                                  ...data.breakRoom,
+                                  size,
+                                  customWidth: preset.width,
+                                  customLength: preset.length
+                                }
+                              });
+                            }}
+                            className={`px-4 py-2 rounded capitalize ${
+                              data.breakRoom.size === size
+                                ? 'bg-amber-600 text-white'
+                                : 'bg-gray-200 text-gray-700'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Width (ft)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={data.breakRoom.customWidth}
+                            onChange={(e) => setActiveData({ ...data, breakRoom: { ...data.breakRoom, customWidth: parseFloat(e.target.value) || 0 } })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Length (ft)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={data.breakRoom.customLength}
+                            onChange={(e) => setActiveData({ ...data, breakRoom: { ...data.breakRoom, customLength: parseFloat(e.target.value) || 0 } })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          />
+                        </div>
+                      </div>
+                      <div className="bg-gray-50 p-3 rounded">
+                        <p className="font-medium">Total: {calculateBreakRoomSF(data.breakRoom)} SF</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Support Spaces */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('support')}
+              >
+                <div className="flex items-center">
+                  <Server className="w-5 h-5 mr-2 text-gray-600" />
+                  <h2 className="text-xl font-semibold">
+                    Support Spaces
+                    {(data.itCloset.enabled || data.storage.enabled) && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        ({(data.itCloset.enabled ? 1 : 0) + (data.storage.enabled ? 1 : 0)})
+                      </span>
+                    )}
+                  </h2>
+                </div>
+                {collapsed.support ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.support && (
+                <div className="p-4 space-y-4">
+                  {/* IT Closet */}
+                  <div className="border border-gray-200 rounded p-3 space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={data.itCloset.enabled}
+                        onChange={(e) => setActiveData({ ...data, itCloset: { ...data.itCloset, enabled: e.target.checked } })}
+                        className="mr-2"
+                      />
+                      <span className="font-medium">IT Closet</span>
+                    </label>
+                    {data.itCloset.enabled && (
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Width (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={data.itCloset.width}
+                            onChange={(e) => setActiveData({ ...data, itCloset: { ...data.itCloset, width: parseFloat(e.target.value) || 0 } })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Length (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={data.itCloset.length}
+                            onChange={(e) => setActiveData({ ...data, itCloset: { ...data.itCloset, length: parseFloat(e.target.value) || 0 } })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">SF</label>
+                          <div className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm">
+                            {Math.round(data.itCloset.width * data.itCloset.length)}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Storage */}
+                  <div className="border border-gray-200 rounded p-3 space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={data.storage.enabled}
+                        onChange={(e) => setActiveData({ ...data, storage: { ...data.storage, enabled: e.target.checked } })}
+                        className="mr-2"
+                      />
+                      <span className="font-medium">Storage</span>
+                    </label>
+                    {data.storage.enabled && (
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Width (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={data.storage.width}
+                            onChange={(e) => setActiveData({ ...data, storage: { ...data.storage, width: parseFloat(e.target.value) || 0 } })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Length (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={data.storage.length}
+                            onChange={(e) => setActiveData({ ...data, storage: { ...data.storage, length: parseFloat(e.target.value) || 0 } })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">SF</label>
+                          <div className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm">
+                            {Math.round(data.storage.width * data.storage.length)}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Specialty Rooms */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('specialty')}
+              >
+                <div className="flex items-center">
+                  <Building2 className="w-5 h-5 mr-2 text-indigo-600" />
+                  <h2 className="text-xl font-semibold">
+                    Specialty Rooms
+                    {data.specialtyRooms.length > 0 && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        ({data.specialtyRooms.length})
+                      </span>
+                    )}
+                  </h2>
+                </div>
+                {collapsed.specialty ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.specialty && (
+                <div className="p-4 space-y-4">
+                  <button
+                    onClick={addSpecialtyRoom}
+                    className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200"
+                  >
+                    <Plus className="inline-block w-4 h-4 mr-1" />
+                    Add Custom Room
+                  </button>
+                  {data.specialtyRooms.map((room) => (
+                    <div key={room.id} className="border border-gray-200 rounded p-3 space-y-2">
+                      <div className="flex justify-between items-center gap-2">
+                        <input
+                          type="text"
+                          value={room.name}
+                          onChange={(e) => updateSpecialtyRoom(room.id, 'name', e.target.value)}
+                          className="flex-1 px-2 py-1 border border-gray-300 rounded font-medium"
+                          placeholder="Room Name"
+                        />
+                        <button
+                          onClick={() => deleteRoom('specialtyRooms', room.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Width (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={room.width}
+                            onChange={(e) => updateSpecialtyRoom(room.id, 'width', parseFloat(e.target.value) || 0)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Length (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={room.length}
+                            onChange={(e) => updateSpecialtyRoom(room.id, 'length', parseFloat(e.target.value) || 0)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">SF</label>
+                          <div className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm">
+                            {Math.round(room.width * room.length)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-6 space-y-6">
+              {/* Active Scenario Totals */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h3 className="text-lg font-semibold mb-4">
+                  {activeScenario === 'current' ? 'Current Needs' : 'Future Needs'}
+                </h3>
+                <div className="text-4xl font-bold text-blue-600 mb-6">
+                  {activeTotals.rentableSF.toLocaleString()} SF
+                </div>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Net Programmed:</span>
+                    <span className="font-medium">{activeTotals.netSF.toLocaleString()} SF</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">+ Circulation (35%):</span>
+                    <span className="font-medium">{(activeTotals.usableSF - activeTotals.netSF).toLocaleString()} SF</span>
+                  </div>
+                  <div className="flex justify-between border-t pt-2">
+                    <span className="text-gray-600">Usable SF:</span>
+                    <span className="font-medium">{activeTotals.usableSF.toLocaleString()} SF</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">+ Load Factor (17.5%):</span>
+                    <span className="font-medium">{(activeTotals.rentableSF - activeTotals.usableSF).toLocaleString()} SF</span>
+                  </div>
+                  <div className="flex justify-between border-t pt-2 font-bold">
+                    <span>Rentable SF:</span>
+                    <span className="text-blue-600">{activeTotals.rentableSF.toLocaleString()} SF</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Scenario Comparison */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h3 className="text-lg font-semibold mb-4">Scenario Comparison</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Current Needs:</span>
+                    <span className="font-medium">{currentTotals.rentableSF.toLocaleString()} SF</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Future Needs:</span>
+                    <span className="font-medium">{futureTotals.rentableSF.toLocaleString()} SF</span>
+                  </div>
+                  <div className="border-t pt-3">
+                    <div className="flex justify-between font-bold">
+                      <span>Difference:</span>
+                      <span className={futureTotals.rentableSF > currentTotals.rentableSF ? 'text-green-600' : 'text-gray-600'}>
+                        {futureTotals.rentableSF > currentTotals.rentableSF ? '+' : ''}
+                        {(futureTotals.rentableSF - currentTotals.rentableSF).toLocaleString()} SF
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-gray-600 mt-1">
+                      <span>Percentage:</span>
+                      <span>
+                        {currentTotals.rentableSF > 0
+                          ? (((futureTotals.rentableSF - currentTotals.rentableSF) / currentTotals.rentableSF) * 100).toFixed(1)
+                          : 0}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Download Report */}
+              <button
+                onClick={downloadReport}
+                className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center"
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                Send Report to Broker
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+    // ====================
+    // FLEX CALCULATOR
+    // ====================
+    const FlexSpaceCalculator = () => {
+  // Active scenario state
+  const [activeScenario, setActiveScenario] = useState('current');
+  const [futureModified, setFutureModified] = useState(false);
+
+  // Initialize state for both scenarios
+  const initialState = {
+    reception: {
+      hasEmployee: false,
+      waitingCapacity: 0
+    },
+    conferenceRooms: [],
+    privateOffices: [],
+    workstations: {
+      count: 0,
+      width: 5,
+      length: 6
+    },
+    warehouse: {
+      squareFootage: 500
+    },
+    breakRoom: {
+      enabled: false,
+      size: 'medium',
+      customWidth: 10,
+      customLength: 20
+    },
+    itCloset: {
+      enabled: false,
+      width: 8,
+      length: 12
+    },
+    storage: {
+      enabled: false,
+      width: 6,
+      length: 10
+    },
+    specialtyRooms: []
+  };
+
+  const [currentNeeds, setCurrentNeeds] = useState(initialState);
+  const [futureNeeds, setFutureNeeds] = useState(initialState);
+
+  // Collapsed sections state
+  const [collapsed, setCollapsed] = useState({
+    reception: false,
+    conference: false,
+    offices: false,
+    workstations: false,
+    warehouse: false,
+    breakRoom: false,
+    support: false,
+    specialty: false
+  });
+
+  // Sync current to future until future is modified
+  useEffect(() => {
+    if (!futureModified) {
+      setFutureNeeds(currentNeeds);
+    }
+  }, [currentNeeds, futureModified]);
+
+  const getActiveData = () => activeScenario === 'current' ? currentNeeds : futureNeeds;
+  const setActiveData = (data) => {
+    if (activeScenario === 'current') {
+      setCurrentNeeds(data);
+    } else {
+      setFutureModified(true);
+      setFutureNeeds(data);
+    }
+  };
+
+  // Calculation functions
+  const calculateReceptionSF = (reception) => {
+    if (reception.waitingCapacity >= 10) return 400;
+    return reception.hasEmployee ? 400 : 300;
+  };
+
+  const calculateWorkstationsSF = (workstations) => {
+    const sfPerStation = workstations.width * workstations.length;
+    return workstations.count * sfPerStation * 2; // Double for circulation
+  };
+
+  const calculateBreakRoomSF = (breakRoom) => {
+    if (!breakRoom.enabled) return 0;
+    return breakRoom.customWidth * breakRoom.customLength;
+  };
+
+  const calculateTotalSF = (data) => {
+    let netSF = 0;
+
+    // Reception
+    netSF += calculateReceptionSF(data.reception);
+
+    // Conference rooms
+    data.conferenceRooms.forEach(room => {
+      netSF += room.width * room.length;
+    });
+
+    // Private offices
+    data.privateOffices.forEach(office => {
+      netSF += office.width * office.length;
+    });
+
+    // Workstations (already doubled)
+    netSF += calculateWorkstationsSF(data.workstations);
+
+    // Warehouse (always included)
+    netSF += data.warehouse.squareFootage;
+
+    // Break room
+    netSF += calculateBreakRoomSF(data.breakRoom);
+
+    // IT Closet
+    if (data.itCloset.enabled) {
+      netSF += data.itCloset.width * data.itCloset.length;
+    }
+
+    // Storage
+    if (data.storage.enabled) {
+      netSF += data.storage.width * data.storage.length;
+    }
+
+    // Specialty rooms
+    data.specialtyRooms.forEach(room => {
+      netSF += room.width * room.length;
+    });
+
+    const usableSF = Math.round(netSF * 1.35);
+    const rentableSF = Math.round(usableSF * 1.175);
+
+    return { netSF: Math.round(netSF), usableSF, rentableSF };
+  };
+
+  const toggleCollapsed = (section) => {
+    setCollapsed(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  // Room presets
+  const conferencePresets = [
+    { name: 'Small (6 person)', width: 12, length: 15, capacity: 6 },
+    { name: 'Medium (8 person)', width: 12, length: 20, capacity: 8 },
+    { name: 'Large (12+ person)', width: 15, length: 25, capacity: 12 }
+  ];
+
+  const officePresets = [
+    { name: 'Small (Junior/Shared)', width: 8, length: 10 },
+    { name: 'Medium (Standard)', width: 10, length: 15 },
+    { name: 'Large (Executive)', width: 12, length: 18 }
+  ];
+
+  const breakRoomPresets = {
+    small: { width: 10, length: 12 },
+    medium: { width: 10, length: 20 },
+    large: { width: 20, length: 20 }
+  };
+
+  // Add room handlers
+  const addConferenceRoom = (preset) => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      conferenceRooms: [...data.conferenceRooms, { ...preset, id: Date.now() }]
+    });
+  };
+
+  const addPrivateOffice = (preset) => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      privateOffices: [...data.privateOffices, { ...preset, id: Date.now() }]
+    });
+  };
+
+  const addSpecialtyRoom = () => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      specialtyRooms: [...data.specialtyRooms, { id: Date.now(), name: 'Custom Room', width: 10, length: 10 }]
+    });
+  };
+
+  // Delete handlers
+  const deleteRoom = (type, id) => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      [type]: data[type].filter(room => room.id !== id)
+    });
+  };
+
+  // Update handlers
+  const updateRoom = (type, id, field, value) => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      [type]: data[type].map(room => 
+        room.id === id ? { ...room, [field]: parseFloat(value) || 0 } : room
+      )
+    });
+  };
+
+  const updateSpecialtyRoom = (id, field, value) => {
+    const data = getActiveData();
+    setActiveData({
+      ...data,
+      specialtyRooms: data.specialtyRooms.map(room => 
+        room.id === id ? { ...room, [field]: value } : room
+      )
+    });
+  };
+
+  // Warehouse handlers
+  const adjustWarehouse = (amount) => {
+    const data = getActiveData();
+    const newSF = Math.max(0, data.warehouse.squareFootage + amount);
+    setActiveData({
+      ...data,
+      warehouse: { ...data.warehouse, squareFootage: newSF }
+    });
+  };
+
+  // Download report
+  const downloadReport = () => {
+    const currentTotals = calculateTotalSF(currentNeeds);
+    const futureTotals = calculateTotalSF(futureNeeds);
+    const difference = futureTotals.rentableSF - currentTotals.rentableSF;
+    const percentIncrease = ((difference / currentTotals.rentableSF) * 100).toFixed(1);
+
+    let report = '='.repeat(60) + '\n';
+    report += 'FLEX SPACE REQUIREMENTS REPORT\n';
+    report += '='.repeat(60) + '\n\n';
+
+    // Current Needs
+    report += 'CURRENT NEEDS\n';
+    report += '-'.repeat(60) + '\n';
+    report += `Reception: ${calculateReceptionSF(currentNeeds.reception)} SF\n`;
+    
+    if (currentNeeds.conferenceRooms.length > 0) {
+      report += `\nConference Rooms:\n`;
+      currentNeeds.conferenceRooms.forEach((room, i) => {
+        report += `  ${room.name}: ${room.width}' x ${room.length}' = ${room.width * room.length} SF\n`;
+      });
+    }
+
+    if (currentNeeds.privateOffices.length > 0) {
+      report += `\nPrivate Offices:\n`;
+      currentNeeds.privateOffices.forEach((office, i) => {
+        report += `  ${office.name}: ${office.width}' x ${office.length}' = ${office.width * office.length} SF\n`;
+      });
+    }
+
+    if (currentNeeds.workstations.count > 0) {
+      const sfPerStation = currentNeeds.workstations.width * currentNeeds.workstations.length;
+      report += `\nOpen Workstations:\n`;
+      report += `  ${currentNeeds.workstations.count} stations x ${sfPerStation} SF x 2 (circulation) = ${calculateWorkstationsSF(currentNeeds.workstations)} SF\n`;
+    }
+
+    report += `\nWarehouse: ${currentNeeds.warehouse.squareFootage} SF\n`;
+
+    if (currentNeeds.breakRoom.enabled) {
+      report += `\nBreak Room: ${calculateBreakRoomSF(currentNeeds.breakRoom)} SF\n`;
+    }
+
+    if (currentNeeds.itCloset.enabled) {
+      report += `IT Closet: ${currentNeeds.itCloset.width * currentNeeds.itCloset.length} SF\n`;
+    }
+
+    if (currentNeeds.storage.enabled) {
+      report += `Storage: ${currentNeeds.storage.width * currentNeeds.storage.length} SF\n`;
+    }
+
+    if (currentNeeds.specialtyRooms.length > 0) {
+      report += `\nSpecialty Rooms:\n`;
+      currentNeeds.specialtyRooms.forEach(room => {
+        report += `  ${room.name}: ${room.width}' x ${room.length}' = ${room.width * room.length} SF\n`;
+      });
+    }
+
+    report += `\nCurrent Totals:\n`;
+    report += `  Net Programmed SF: ${currentTotals.netSF}\n`;
+    report += `  Usable SF (+ 35% circulation): ${currentTotals.usableSF}\n`;
+    report += `  Rentable SF (+ 17.5% load factor): ${currentTotals.rentableSF}\n\n`;
+
+    // Future Needs
+    report += '\n' + '='.repeat(60) + '\n';
+    report += 'FUTURE NEEDS\n';
+    report += '-'.repeat(60) + '\n';
+    report += `Reception: ${calculateReceptionSF(futureNeeds.reception)} SF\n`;
+    
+    if (futureNeeds.conferenceRooms.length > 0) {
+      report += `\nConference Rooms:\n`;
+      futureNeeds.conferenceRooms.forEach((room, i) => {
+        report += `  ${room.name}: ${room.width}' x ${room.length}' = ${room.width * room.length} SF\n`;
+      });
+    }
+
+    if (futureNeeds.privateOffices.length > 0) {
+      report += `\nPrivate Offices:\n`;
+      futureNeeds.privateOffices.forEach((office, i) => {
+        report += `  ${office.name}: ${office.width}' x ${office.length}' = ${office.width * office.length} SF\n`;
+      });
+    }
+
+    if (futureNeeds.workstations.count > 0) {
+      const sfPerStation = futureNeeds.workstations.width * futureNeeds.workstations.length;
+      report += `\nOpen Workstations:\n`;
+      report += `  ${futureNeeds.workstations.count} stations x ${sfPerStation} SF x 2 (circulation) = ${calculateWorkstationsSF(futureNeeds.workstations)} SF\n`;
+    }
+
+    report += `\nWarehouse: ${futureNeeds.warehouse.squareFootage} SF\n`;
+
+    if (futureNeeds.breakRoom.enabled) {
+      report += `\nBreak Room: ${calculateBreakRoomSF(futureNeeds.breakRoom)} SF\n`;
+    }
+
+    if (futureNeeds.itCloset.enabled) {
+      report += `IT Closet: ${futureNeeds.itCloset.width * futureNeeds.itCloset.length} SF\n`;
+    }
+
+    if (futureNeeds.storage.enabled) {
+      report += `Storage: ${futureNeeds.storage.width * futureNeeds.storage.length} SF\n`;
+    }
+
+    if (futureNeeds.specialtyRooms.length > 0) {
+      report += `\nSpecialty Rooms:\n`;
+      futureNeeds.specialtyRooms.forEach(room => {
+        report += `  ${room.name}: ${room.width}' x ${room.length}' = ${room.width * room.length} SF\n`;
+      });
+    }
+
+    report += `\nFuture Totals:\n`;
+    report += `  Net Programmed SF: ${futureTotals.netSF}\n`;
+    report += `  Usable SF (+ 35% circulation): ${futureTotals.usableSF}\n`;
+    report += `  Rentable SF (+ 17.5% load factor): ${futureTotals.rentableSF}\n\n`;
+
+    // Comparison
+    report += '\n' + '='.repeat(60) + '\n';
+    report += 'COMPARISON\n';
+    report += '-'.repeat(60) + '\n';
+    report += `Current Rentable SF: ${currentTotals.rentableSF}\n`;
+    report += `Future Rentable SF: ${futureTotals.rentableSF}\n`;
+    report += `Difference: ${difference > 0 ? '+' : ''}${difference} SF (${percentIncrease}%)\n`;
+
+    const subject = encodeURIComponent('Flex Space Requirements Report');
+    const body = encodeURIComponent(report);
+    window.location.href = `mailto:mparisi@industry-rep.com?subject=${subject}&body=${body}`;
+  };
+
+  const data = getActiveData();
+  const currentTotals = calculateTotalSF(currentNeeds);
+  const futureTotals = calculateTotalSF(futureNeeds);
+  const activeTotals = activeScenario === 'current' ? currentTotals : futureTotals;
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Flex Space Calculator</h1>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Scenario Selector */}
+            <div className="bg-white rounded-lg shadow-md p-4">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setActiveScenario('current')}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
+                    activeScenario === 'current'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Building2 className="inline-block w-5 h-5 mr-2" />
+                  Current Needs
+                </button>
+                <button
+                  onClick={() => setActiveScenario('future')}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
+                    activeScenario === 'future'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <TrendingUp className="inline-block w-5 h-5 mr-2" />
+                  Future Needs
+                </button>
+              </div>
+            </div>
+
+            {/* Reception */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('reception')}
+              >
+                <div className="flex items-center">
+                  <Building2 className="w-5 h-5 mr-2 text-blue-600" />
+                  <h2 className="text-xl font-semibold">Reception Area</h2>
+                </div>
+                {collapsed.reception ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.reception && (
+                <div className="p-4 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Reception Employee
+                    </label>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setActiveData({ ...data, reception: { ...data.reception, hasEmployee: true } })}
+                        className={`px-4 py-2 rounded ${
+                          data.reception.hasEmployee ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        Yes
+                      </button>
+                      <button
+                        onClick={() => setActiveData({ ...data, reception: { ...data.reception, hasEmployee: false } })}
+                        className={`px-4 py-2 rounded ${
+                          !data.reception.hasEmployee ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        No
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Waiting Capacity
+                    </label>
+                    <div className="flex items-center justify-center gap-4 bg-gray-50 p-4 rounded-lg">
+                      <button
+                        onClick={() => setActiveData({ ...data, reception: { ...data.reception, waitingCapacity: Math.max(0, data.reception.waitingCapacity - 1) } })}
+                        className="w-12 h-12 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-bold text-2xl flex items-center justify-center"
+                      >
+                        −
+                      </button>
+                      <div className="text-center">
+                        <div className="text-5xl font-bold text-orange-600">
+                          {data.reception.waitingCapacity}
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">people</div>
+                      </div>
+                      <button
+                        onClick={() => setActiveData({ ...data, reception: { ...data.reception, waitingCapacity: data.reception.waitingCapacity + 1 } })}
+                        className="w-12 h-12 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 font-bold text-2xl flex items-center justify-center"
+                      >
+                        +
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2 text-center">
+                      10+ capacity = 400 SF (20' × 20')
+                    </p>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
+                    <p className="font-medium">Total: {calculateReceptionSF(data.reception)} SF</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Conference Rooms */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('conference')}
+              >
+                <div className="flex items-center">
+                  <DoorOpen className="w-5 h-5 mr-2 text-blue-600" />
+                  <h2 className="text-xl font-semibold">
+                    Conference Rooms
+                    {data.conferenceRooms.length > 0 && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        ({data.conferenceRooms.length})
+                      </span>
+                    )}
+                  </h2>
+                </div>
+                {collapsed.conference ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.conference && (
+                <div className="p-4 space-y-4">
+                  <div className="flex gap-2 flex-wrap">
+                    {conferencePresets.map((preset, i) => (
+                      <button
+                        key={i}
+                        onClick={() => addConferenceRoom(preset)}
+                        className="px-4 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                      >
+                        <Plus className="inline-block w-4 h-4 mr-1" />
+                        {preset.name}
+                      </button>
+                    ))}
+                  </div>
+                  {data.conferenceRooms.map((room) => (
+                    <div key={room.id} className="border border-gray-200 rounded p-3 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">{room.name}</span>
+                        <button
+                          onClick={() => deleteRoom('conferenceRooms', room.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Width (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={room.width}
+                            onChange={(e) => updateRoom('conferenceRooms', room.id, 'width', e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Length (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={room.length}
+                            onChange={(e) => updateRoom('conferenceRooms', room.id, 'length', e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">SF</label>
+                          <div className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm">
+                            {Math.round(room.width * room.length)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Private Offices */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('offices')}
+              >
+                <div className="flex items-center">
+                  <Building2 className="w-5 h-5 mr-2 text-gray-600" />
+                  <h2 className="text-xl font-semibold">
+                    Private Offices
+                    {data.privateOffices.length > 0 && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        ({data.privateOffices.length})
+                      </span>
+                    )}
+                  </h2>
+                </div>
+                {collapsed.offices ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.offices && (
+                <div className="p-4 space-y-4">
+                  <div className="flex gap-2 flex-wrap">
+                    {officePresets.map((preset, i) => (
+                      <button
+                        key={i}
+                        onClick={() => addPrivateOffice(preset)}
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                      >
+                        <Plus className="inline-block w-4 h-4 mr-1" />
+                        {preset.name}
+                      </button>
+                    ))}
+                  </div>
+                  {data.privateOffices.map((office) => (
+                    <div key={office.id} className="border border-gray-200 rounded p-3 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">{office.name}</span>
+                        <button
+                          onClick={() => deleteRoom('privateOffices', office.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Width (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={office.width}
+                            onChange={(e) => updateRoom('privateOffices', office.id, 'width', e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Length (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={office.length}
+                            onChange={(e) => updateRoom('privateOffices', office.id, 'length', e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">SF</label>
+                          <div className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm">
+                            {Math.round(office.width * office.length)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Open Workstations */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('workstations')}
+              >
+                <div className="flex items-center">
+                  <Users className="w-5 h-5 mr-2 text-blue-600" />
+                  <h2 className="text-xl font-semibold">Open Workstations</h2>
+                </div>
+                {collapsed.workstations ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.workstations && (
+                <div className="p-4 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Number of Workstations
+                    </label>
+                    <div className="flex items-center justify-center gap-4 bg-gray-50 p-4 rounded-lg">
+                      <button
+                        onClick={() => setActiveData({ ...data, workstations: { ...data.workstations, count: Math.max(0, data.workstations.count - 1) } })}
+                        className="w-12 h-12 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-bold text-2xl flex items-center justify-center"
+                      >
+                        −
+                      </button>
+                      <div className="text-center">
+                        <div className="text-5xl font-bold text-orange-600">
+                          {data.workstations.count}
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">workstations</div>
+                      </div>
+                      <button
+                        onClick={() => setActiveData({ ...data, workstations: { ...data.workstations, count: data.workstations.count + 1 } })}
+                        className="w-12 h-12 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 font-bold text-2xl flex items-center justify-center"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Desk Dimensions
+                    </label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">
+                          Width (ft)
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={data.workstations.width}
+                          onChange={(e) => setActiveData({ ...data, workstations: { ...data.workstations, width: parseFloat(e.target.value) || 0 } })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">
+                          Length (ft)
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={data.workstations.length}
+                          onChange={(e) => setActiveData({ ...data, workstations: { ...data.workstations, length: parseFloat(e.target.value) || 0 } })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-orange-50 p-3 rounded text-center">
+                    <p className="text-sm text-gray-600">
+                      Adjust warehouse space in 100 SF increments
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Break Room */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('breakRoom')}
+              >
+                <div className="flex items-center">
+                  <Coffee className="w-5 h-5 mr-2 text-amber-600" />
+                  <h2 className="text-xl font-semibold">Break Room</h2>
+                </div>
+                {collapsed.breakRoom ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.breakRoom && (
+                <div className="p-4 space-y-4">
+                  <div>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={data.breakRoom.enabled}
+                        onChange={(e) => setActiveData({ ...data, breakRoom: { ...data.breakRoom, enabled: e.target.checked } })}
+                        className="mr-2"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Include Break Room</span>
+                    </label>
+                  </div>
+                  {data.breakRoom.enabled && (
+                    <>
+                      <div className="flex gap-2">
+                        {['small', 'medium', 'large'].map((size) => (
+                          <button
+                            key={size}
+                            onClick={() => {
+                              const preset = breakRoomPresets[size];
+                              setActiveData({
+                                ...data,
+                                breakRoom: {
+                                  ...data.breakRoom,
+                                  size,
+                                  customWidth: preset.width,
+                                  customLength: preset.length
+                                }
+                              });
+                            }}
+                            className={`px-4 py-2 rounded capitalize ${
+                              data.breakRoom.size === size
+                                ? 'bg-amber-600 text-white'
+                                : 'bg-gray-200 text-gray-700'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Width (ft)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={data.breakRoom.customWidth}
+                            onChange={(e) => setActiveData({ ...data, breakRoom: { ...data.breakRoom, customWidth: parseFloat(e.target.value) || 0 } })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Length (ft)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={data.breakRoom.customLength}
+                            onChange={(e) => setActiveData({ ...data, breakRoom: { ...data.breakRoom, customLength: parseFloat(e.target.value) || 0 } })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          />
+                        </div>
+                      </div>
+                      <div className="bg-gray-50 p-3 rounded">
+                        <p className="font-medium">Total: {calculateBreakRoomSF(data.breakRoom)} SF</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Support Spaces */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('support')}
+              >
+                <div className="flex items-center">
+                  <Server className="w-5 h-5 mr-2 text-gray-600" />
+                  <h2 className="text-xl font-semibold">
+                    Support Spaces
+                    {(data.itCloset.enabled || data.storage.enabled) && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        ({(data.itCloset.enabled ? 1 : 0) + (data.storage.enabled ? 1 : 0)})
+                      </span>
+                    )}
+                  </h2>
+                </div>
+                {collapsed.support ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.support && (
+                <div className="p-4 space-y-4">
+                  {/* IT Closet */}
+                  <div className="border border-gray-200 rounded p-3 space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={data.itCloset.enabled}
+                        onChange={(e) => setActiveData({ ...data, itCloset: { ...data.itCloset, enabled: e.target.checked } })}
+                        className="mr-2"
+                      />
+                      <span className="font-medium">IT Closet</span>
+                    </label>
+                    {data.itCloset.enabled && (
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Width (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={data.itCloset.width}
+                            onChange={(e) => setActiveData({ ...data, itCloset: { ...data.itCloset, width: parseFloat(e.target.value) || 0 } })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Length (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={data.itCloset.length}
+                            onChange={(e) => setActiveData({ ...data, itCloset: { ...data.itCloset, length: parseFloat(e.target.value) || 0 } })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">SF</label>
+                          <div className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm">
+                            {Math.round(data.itCloset.width * data.itCloset.length)}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Storage */}
+                  <div className="border border-gray-200 rounded p-3 space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={data.storage.enabled}
+                        onChange={(e) => setActiveData({ ...data, storage: { ...data.storage, enabled: e.target.checked } })}
+                        className="mr-2"
+                      />
+                      <span className="font-medium">Storage</span>
+                    </label>
+                    {data.storage.enabled && (
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Width (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={data.storage.width}
+                            onChange={(e) => setActiveData({ ...data, storage: { ...data.storage, width: parseFloat(e.target.value) || 0 } })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Length (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={data.storage.length}
+                            onChange={(e) => setActiveData({ ...data, storage: { ...data.storage, length: parseFloat(e.target.value) || 0 } })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">SF</label>
+                          <div className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm">
+                            {Math.round(data.storage.width * data.storage.length)}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Specialty Rooms */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div
+                className="p-4 cursor-pointer flex justify-between items-center border-b"
+                onClick={() => toggleCollapsed('specialty')}
+              >
+                <div className="flex items-center">
+                  <Building2 className="w-5 h-5 mr-2 text-indigo-600" />
+                  <h2 className="text-xl font-semibold">
+                    Specialty Rooms
+                    {data.specialtyRooms.length > 0 && (
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        ({data.specialtyRooms.length})
+                      </span>
+                    )}
+                  </h2>
+                </div>
+                {collapsed.specialty ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+              {!collapsed.specialty && (
+                <div className="p-4 space-y-4">
+                  <button
+                    onClick={addSpecialtyRoom}
+                    className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200"
+                  >
+                    <Plus className="inline-block w-4 h-4 mr-1" />
+                    Add Custom Room
+                  </button>
+                  {data.specialtyRooms.map((room) => (
+                    <div key={room.id} className="border border-gray-200 rounded p-3 space-y-2">
+                      <div className="flex justify-between items-center gap-2">
+                        <input
+                          type="text"
+                          value={room.name}
+                          onChange={(e) => updateSpecialtyRoom(room.id, 'name', e.target.value)}
+                          className="flex-1 px-2 py-1 border border-gray-300 rounded font-medium"
+                          placeholder="Room Name"
+                        />
+                        <button
+                          onClick={() => deleteRoom('specialtyRooms', room.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Width (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={room.width}
+                            onChange={(e) => updateSpecialtyRoom(room.id, 'width', parseFloat(e.target.value) || 0)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Length (ft)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={room.length}
+                            onChange={(e) => updateSpecialtyRoom(room.id, 'length', parseFloat(e.target.value) || 0)}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">SF</label>
+                          <div className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm">
+                            {Math.round(room.width * room.length)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-6 space-y-6">
+              {/* Active Scenario Totals */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h3 className="text-lg font-semibold mb-4">
+                  {activeScenario === 'current' ? 'Current Needs' : 'Future Needs'}
+                </h3>
+                <div className="text-4xl font-bold text-blue-600 mb-6">
+                  {activeTotals.rentableSF.toLocaleString()} SF
+                </div>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Net Programmed:</span>
+                    <span className="font-medium">{activeTotals.netSF.toLocaleString()} SF</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">+ Circulation (35%):</span>
+                    <span className="font-medium">{(activeTotals.usableSF - activeTotals.netSF).toLocaleString()} SF</span>
+                  </div>
+                  <div className="flex justify-between border-t pt-2">
+                    <span className="text-gray-600">Usable SF:</span>
+                    <span className="font-medium">{activeTotals.usableSF.toLocaleString()} SF</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">+ Load Factor (17.5%):</span>
+                    <span className="font-medium">{(activeTotals.rentableSF - activeTotals.usableSF).toLocaleString()} SF</span>
+                  </div>
+                  <div className="flex justify-between border-t pt-2 font-bold">
+                    <span>Rentable SF:</span>
+                    <span className="text-blue-600">{activeTotals.rentableSF.toLocaleString()} SF</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Scenario Comparison */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h3 className="text-lg font-semibold mb-4">Scenario Comparison</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Current Needs:</span>
+                    <span className="font-medium">{currentTotals.rentableSF.toLocaleString()} SF</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Future Needs:</span>
+                    <span className="font-medium">{futureTotals.rentableSF.toLocaleString()} SF</span>
+                  </div>
+                  <div className="border-t pt-3">
+                    <div className="flex justify-between font-bold">
+                      <span>Difference:</span>
+                      <span className={futureTotals.rentableSF > currentTotals.rentableSF ? 'text-green-600' : 'text-gray-600'}>
+                        {futureTotals.rentableSF > currentTotals.rentableSF ? '+' : ''}
+                        {(futureTotals.rentableSF - currentTotals.rentableSF).toLocaleString()} SF
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-gray-600 mt-1">
+                      <span>Percentage:</span>
+                      <span>
+                        {currentTotals.rentableSF > 0
+                          ? (((futureTotals.rentableSF - currentTotals.rentableSF) / currentTotals.rentableSF) * 100).toFixed(1)
+                          : 0}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Download Report */}
+              <button
+                onClick={downloadReport}
+                className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center"
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                Send Report to Broker
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+        // Main App Component
+    const SpaceCalculatorApp = () => {
+      const [productType, setProductType] = useState(null);
+
+      return (
+        <div className="min-h-screen bg-gray-50 p-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">Commercial Space Calculator</h1>
+              <p className="text-gray-600">Professional space planning for your business needs</p>
+            </div>
+
+            <ProductSelector selectedType={productType} onSelect={setProductType} />
+
+            {productType === 'office' && <OfficeSpaceCalculator />}
+            {productType === 'flex' && <FlexSpaceCalculator />}
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<SpaceCalculatorApp />);
+  </script>
+</body>
+</html>
